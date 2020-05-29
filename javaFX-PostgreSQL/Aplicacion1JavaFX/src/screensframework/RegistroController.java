@@ -40,7 +40,7 @@ public class RegistroController implements Initializable, ControlledScreen {
                 "Hombre",
                 "Mujer"
                 );
-        cbAddsex.setItems(Options);
+        cbAddsex.setItems(options);
         
         // Escuchador para comprobar si pierdo el foco
         tfAddUser.focusedProperty().addListener(new ChangeListener<Boolean>() {
@@ -126,8 +126,8 @@ public class RegistroController implements Initializable, ControlledScreen {
         // PREPARAMOS LA SENTENCIA PARA INSERTAR LOS DATOS
         try {
             conexion = DBConnection.connect();
-            String sql = "INSERT INTO usuario "
-                    + "(nombre, apellido, sexo, email, usuario, pass) "
+            String sql = "INSERT INTO usuarios "
+                    + "(nombre, apellido, sexo, correo, usuario, pass) "
                     + "VALUES (?, ?, ?, ?, ?, ?)";
             
             PreparedStatement estado = conexion.prepareStatement(sql);
@@ -145,12 +145,13 @@ public class RegistroController implements Initializable, ControlledScreen {
             tfAddPass.setText("");
             tfConfirmar.setText("");
             cbAddsex.setValue("");
+                       
+            int n =  estado.executeUpdate();
+
             
-            int n = estado.executeUpdate();
-            
-            if (n > 0) {
-                JOptionPane.showMessageDialog(null, "Fallo el registro");
-            } 
+            if (n == 1) {
+                JOptionPane.showMessageDialog(null, "Se ha regitrado correctamente");
+            }
             
             estado.close();
             

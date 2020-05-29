@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="Aplicacion1JavaFX.jar" size="243046" download="eager" />
+    <jar href="Aplicacion1JavaFX.jar" size="243030" download="eager" />
     <jar href="lib\commons-codec-1.7.jar" size="259600" download="eager" />
     <jar href="lib\postgresql-9.1-902.jdbc4.jar" size="561969" download="eager" />
   </resources>

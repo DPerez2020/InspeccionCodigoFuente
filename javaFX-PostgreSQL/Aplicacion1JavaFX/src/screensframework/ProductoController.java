@@ -2,6 +2,7 @@ package screensframework;
 
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
@@ -340,7 +341,7 @@ public class ProductoController implements Initializable, ControlledScreen {
 
                 PreparedStatement estado = conexion.prepareStatement(sql);
 
-                estado.executeUpdate();
+                int n = estado.executeUpdate();
 
                 if (n > 0) {
                     tablaProducto.getColumns().clear();
