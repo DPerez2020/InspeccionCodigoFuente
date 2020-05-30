@@ -24,6 +24,16 @@ public class Validaciones {
         return true;
     }
     
+    public boolean validarVacios(int datos, String nombreCampo) {
+        
+        if (datos==-1) {
+            
+            JOptionPane.showMessageDialog(null, "Debe seleccionar un elemento del combobox: "+nombreCampo);
+            return false;
+        }
+        
+        return true;
+    }
     /********* VALIDAR LONGITUD ****************/
     public boolean validarMaximo(String datos, String nombreCampo, int maximo, int minimo) {
        
@@ -88,5 +98,11 @@ public class Validaciones {
         }
         return true;
     }
+    
+    public boolean validarPrecio(int precio){
+   
+            return precio > 0 && precio<2147483647;
+        
+        }
     
 }
