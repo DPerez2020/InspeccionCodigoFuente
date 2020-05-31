@@ -15,13 +15,24 @@ public class Validaciones {
     /******* VALIDAR VACIOS ************/
     public boolean validarVacios(String datos, String nombreCampo) {
         
-        if (datos.equals("")) {
-            
+        if (datos.equals("")) {            
             JOptionPane.showMessageDialog(null, "El campo "+nombreCampo+" no puede estar vacio");
             return false;
         }
         
         return true;
+    }
+    
+    /*****VALIDA CARACTERES ESPECIALES********/
+    public boolean ValidarCaracteresEspeciales(String cadena,String nombreCampo){
+         p = Pattern.compile("[$%&|<>#='\":]");
+         m=p.matcher(cadena);
+        if (m.find()){
+            JOptionPane.showMessageDialog(null, "El texto introducido: "+cadena+" tiene caracteres invalidos "
+                    + " para el campo "+nombreCampo);
+            return false;
+        }
+        return true;               
     }
     
     /********* VALIDAR LONGITUD ****************/

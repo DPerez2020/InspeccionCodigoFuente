@@ -59,6 +59,9 @@ public class LoginController implements Initializable, ControlledScreen {
             return;
         }
         
+        if (!validation.ValidarCaracteresEspeciales(tfUsuario.getText(), "Nombre de usuario")) {
+            return;
+        }
         /********************************** 
          *     Fin de las validaciones 
          ***********************************/
