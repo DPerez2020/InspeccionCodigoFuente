@@ -70,7 +70,7 @@ public class LoginController implements Initializable, ControlledScreen {
             String sql = "SELECT * FROM "
                     + " usuarios WHERE "
                     + " usuario = '"+tfUsuario.getText()+"' AND "
-                    + " pass = '"+DigestUtils.sha1Hex(tfPass.getText())+"'";
+                    + " pass = '"+DigestUtils.shaHex(tfPass.getText())+"'";
             ResultSet rs = conexion.createStatement().executeQuery(sql);
             
             boolean existeUsuario = rs.next();
