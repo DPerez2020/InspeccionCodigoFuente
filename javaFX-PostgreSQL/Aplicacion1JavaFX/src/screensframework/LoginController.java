@@ -6,6 +6,7 @@ package screensframework;
 
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
@@ -59,6 +60,9 @@ public class LoginController implements Initializable, ControlledScreen {
             return;
         }
         
+        if (!validation.ValidarCaracteresEspeciales(tfUsuario.getText(), "Nombre de usuario")) {
+            return;
+        }
         /********************************** 
          *     Fin de las validaciones 
          ***********************************/
@@ -67,12 +71,21 @@ public class LoginController implements Initializable, ControlledScreen {
         /* SE HACE EL LLAMADO AL MODELO PARA ENTRAR AL SISTEMA */
         try {
             conexion = DBConnection.connect();
+
+
             String sql = "SELECT * FROM "
                     + " usuarios WHERE "
-                    + " usuario = '"+tfUsuario.getText()+"' AND "
-                    + " pass = '"+DigestUtils.shaHex(tfPass.getText())+"'";
-            ResultSet rs = conexion.createStatement().executeQuery(sql);
-            
+                    + " usuario = ? AND "
+                    + " pass = ?";
+
+            PreparedStatement preparedStatement = conexion.prepareStatement(sql);
+            preparedStatement.setString(1,tfUsuario.getText());
+            preparedStatement.setString(2,DigestUtils.sha1Hex(tfPass.getText()));
+
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+
             boolean existeUsuario = rs.next();
             
             if (existeUsuario) {

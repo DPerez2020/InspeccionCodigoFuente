@@ -5,16 +5,20 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
-    
+
     private static Connection conn;
     private static String url = "jdbc:postgresql://localhost:5432/inspeccion";
     private static String user = "postgres";
     private static String pass = "1234";
     /*
+
+
     private static String url = "jdbc:mysql://localhost/sysventas";
     private static String user = "root";
-    private static String pass = "";*/
-    
+    private static String pass = "";
+
+     */
+
     public static Connection connect() throws SQLException{
 	try {
             Class.forName("org.postgresql.Driver").newInstance();
@@ -23,8 +27,8 @@ public class DBConnection {
             System.err.println("Error: "+cnfe.getMessage());
 	} catch(InstantiationException ie) {
             System.err.println("Error: "+ie.getMessage());
-	} catch(IllegalAccessException iae) {
-            System.err.println("Error: "+iae.getMessage());
+	} catch(IllegalAccessException iausere) {
+            System.err.println("Error: "+iausere.getMessage());
 	}
             conn = DriverManager.getConnection(url,user,pass);
             return conn;

@@ -93,6 +93,10 @@ public class RegistroController implements Initializable, ControlledScreen {
             return;
         }
         
+        if (!validation.ValidarCaracteresEspeciales(tfAddUser.getText(), "USUARIO")) {
+            return;
+        }
+        
         if (!validation.validarVacios(tfAddNombre.getText(), "NOMBRE")) {
             return;
         }
@@ -104,7 +108,7 @@ public class RegistroController implements Initializable, ControlledScreen {
         if (cbAddsex.getValue() == null) {
             JOptionPane.showMessageDialog(null, "Selecciona el sexo");
             return;
-        }
+        }       
         
         if (!validation.validarVacios(tfAddCorreo.getText(), "CORREO")) {
             return;
