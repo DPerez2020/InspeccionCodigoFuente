@@ -125,7 +125,13 @@ public class RegistroController implements Initializable, ControlledScreen {
         if (!validation.validaPassword(tfAddPass.getText(), tfConfirmar.getText())) {
             return;
         }
-       
+
+
+        if(!validation.correoNoExiste(tfAddCorreo.getText())){
+            return;
+        }
+
+
         //______________________________________________________________
         // PREPARAMOS LA SENTENCIA PARA INSERTAR LOS DATOS
         try {
