@@ -1,5 +1,6 @@
 package screensframework;
 
+import java.awt.Rectangle;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,7 +29,13 @@ import javax.swing.JOptionPane;
 import screensframework.DBConnect.DBConnection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javafx.print.Printer;
+import javafx.print.PrinterJob;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.image.WritableImage;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class ProductoController implements Initializable, ControlledScreen {
     
@@ -45,9 +52,17 @@ public class ProductoController implements Initializable, ControlledScreen {
     @FXML private ComboBox cbCategoriaProducto;
     @FXML private ComboBox cbMarcaProducto;
     @FXML private Label lbCodigoProducto;
-    
     @FXML private TableView tablaProducto;
     @FXML private TableColumn col;
+    @FXML private Hyperlink vistaImpresion= new Hyperlink();
+    
+     String[] titulos = {
+                    "Codigo",
+                    "Nombre",
+                    "Precio",
+                    "Categoria",
+                    "Marca"
+            };
     private Connection conexion;
     
     private Validaciones validar = new Validaciones();
@@ -119,13 +134,7 @@ public class ProductoController implements Initializable, ControlledScreen {
             //ResultSet
             ResultSet rs = conexion.createStatement().executeQuery(sql);
             // Títulos de las columnas
-            String[] titulos = {
-                    "Codigo",
-                    "Nombre",
-                    "Precio",
-                    "Categoria",
-                    "Marca"
-            };
+           
             /**********************************
              * TABLE COLUMN ADDED DYNAMICALLY *
              **********************************/
@@ -446,7 +455,37 @@ public class ProductoController implements Initializable, ControlledScreen {
             ResultSet rs = conexion.createStatement().executeQuery(sql);
             
             
-        
+        for (int i = 0; i < rs.getMetaData().getColumnCount(); i++ ) {
+                final int j = i;
+                col = new TableColumn(titulos[i]);
+                col.setCellValueFactory(new Callback<CellDataFeatures<ObservableList, String>, ObservableValue<String>>(){                   
+                    public ObservableValue<String> call(CellDataFeatures<ObservableList, String> parametro) {                                                                                             
+                        return new SimpleStringProperty((String)parametro.getValue().get(j));                       
+                    }                   
+                });
+                tablaProducto.getColumns().addAll(col);
+                // Asignamos un tamaño a ls columnnas
+                col.setMinWidth(100);
+                System.out.println("Column ["+i+"] ");
+                // Centrar los datos de la tabla
+                col.setCellFactory(new Callback<TableColumn<String,String>,TableCell<String,String>>(){
+                    @Override
+                    public TableCell<String, String> call(TableColumn<String, String> p) {
+                        TableCell cell = new TableCell(){
+                            @Override
+                            protected void updateItem(Object t, boolean bln) {
+                                if(t != null){
+                                    super.updateItem(t, bln);
+                                    System.out.println(t);
+                                    setText(t.toString());
+                                    setAlignment(Pos.CENTER); //Setting the Alignment
+                                }
+                            }
+                        };
+                        return cell;
+                    }
+                });
+            }
         //producto.clear();
             
             while(rs.next()){
@@ -504,6 +543,41 @@ public class ProductoController implements Initializable, ControlledScreen {
             ex.printStackTrace();
         }
     }
+    
+    public void vistaImpresion(MouseEvent event){
+        try{
+         
+            vistaImpresion.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent e) {
+            Printer printer = Printer.getDefaultPrinter();
+            Stage dialogStage = new Stage(StageStyle.DECORATED);            
+            PrinterJob job = PrinterJob.createPrinterJob(printer);
+                if (job != null) {                    
+                    boolean showDialog = job.showPageSetupDialog(dialogStage);
+                    if (showDialog) {                        
+                        tablaProducto.setScaleX(1.0);
+                        tablaProducto.setScaleY(1.0);
+                        tablaProducto.setTranslateX(0);
+                        tablaProducto.setTranslateY(0);
+                           
+                        boolean success = job.printPage(tablaProducto);
+                        
+                        if (success) {
+                             job.endJob(); 
+                        } 
+                        tablaProducto.setTranslateX(0);
+                        tablaProducto.setTranslateY(0);               
+                        tablaProducto.setScaleX(1.0);
+                        tablaProducto.setScaleY(1.0);                                              
+                    }    
+                }
+                }});
+            
+                }catch(Exception ex){
+                    ex.printStackTrace();
+                }
+            }
     
     @FXML
     private void irInicioContenido(ActionEvent event) {
