@@ -76,7 +76,7 @@
                 <Label layoutX="61.0" layoutY="199.0" prefWidth="44.0" text="Correo" />
                 <Label layoutX="61.0" layoutY="247.0" text="Contraseña" />
                 <Label layoutX="61.0" layoutY="293.0" prefWidth="50.0" text="Repetir" />
-                <PasswordField fx:id="tfAddPass" layoutX="134.0" layoutY="241.0" prefWidth="250.0" promptText="Mas de 5 caracteres" style="-fx-border-color: #3399CC" />
+                <PasswordField fx:id="tfAddPass" layoutX="134.0" layoutY="241.0" prefWidth="250.0" promptText="Debe ser entre 5 y 16 caracpteres" style="-fx-border-color: #3399CC" />
                 <PasswordField fx:id="tfConfirmar" layoutX="134.0" layoutY="287.0" prefWidth="250.0" promptText="Debe ser igual a la de arriba" style="-fx-border-color: #3399CC" />
                 <Button layoutX="87.0" layoutY="330.0" mnemonicParsing="false" onAction="#registroUsuario" prefWidth="77.0" styleClass="botones" text="Registrar" textFill="WHITE">
                   <stylesheets>
