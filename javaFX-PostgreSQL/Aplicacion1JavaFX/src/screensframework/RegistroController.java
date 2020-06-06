@@ -121,8 +121,13 @@ public class RegistroController implements Initializable, ControlledScreen {
         if (!validation.validarVacios(tfAddPass.getText(), "CONTRASEÑA")) {
             return;
         }
-        
+
+
         if (!validation.validaPassword(tfAddPass.getText(), tfConfirmar.getText())) {
+            return;
+        }
+
+        if(!validation.validarMaximo(tfAddPass.getText(),"CONTRASEÑA",16,5)){
             return;
         }
 
