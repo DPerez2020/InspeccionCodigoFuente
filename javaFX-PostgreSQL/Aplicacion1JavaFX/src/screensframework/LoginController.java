@@ -80,7 +80,7 @@ public class LoginController implements Initializable, ControlledScreen {
 
             PreparedStatement preparedStatement = conexion.prepareStatement(sql);
             preparedStatement.setString(1,tfUsuario.getText());
-            preparedStatement.setString(2,DigestUtils.sha1Hex(tfPass.getText()));
+            preparedStatement.setString(2,DigestUtils.shaHex(tfPass.getText()));
 
 
             ResultSet rs = preparedStatement.executeQuery();

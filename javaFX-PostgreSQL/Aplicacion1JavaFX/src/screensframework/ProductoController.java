@@ -544,40 +544,7 @@ public class ProductoController implements Initializable, ControlledScreen {
         }
     }
     
-    public void vistaImpresion(MouseEvent event){
-        try{
-         
-            vistaImpresion.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-            Printer printer = Printer.getDefaultPrinter();
-            Stage dialogStage = new Stage(StageStyle.DECORATED);            
-            PrinterJob job = PrinterJob.createPrinterJob(printer);
-                if (job != null) {                    
-                    boolean showDialog = job.showPageSetupDialog(dialogStage);
-                    if (showDialog) {                        
-                        tablaProducto.setScaleX(1.0);
-                        tablaProducto.setScaleY(1.0);
-                        tablaProducto.setTranslateX(0);
-                        tablaProducto.setTranslateY(0);
-                           
-                        boolean success = job.printPage(tablaProducto);
-                        
-                        if (success) {
-                             job.endJob(); 
-                        } 
-                        tablaProducto.setTranslateX(0);
-                        tablaProducto.setTranslateY(0);               
-                        tablaProducto.setScaleX(1.0);
-                        tablaProducto.setScaleY(1.0);                                              
-                    }    
-                }
-                }});
-            
-                }catch(Exception ex){
-                    ex.printStackTrace();
-                }
-            }
+    
     
     @FXML
     private void irInicioContenido(ActionEvent event) {
