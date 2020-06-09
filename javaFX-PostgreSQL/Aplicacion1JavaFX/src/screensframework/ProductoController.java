@@ -327,7 +327,7 @@ public class ProductoController implements Initializable, ControlledScreen {
     
          }
     }catch(Exception e){
-        JOptionPane.showMessageDialog(null, "No puede ingresar números que excedan la capacidad máxima de un entero: 2,147,483,647");
+        JOptionPane.showMessageDialog(null, "No se admiten letras o números que excedan la capacidad máxima que puede almacenar un entero: 2,147,483,647");
             }
         }
     }
@@ -390,7 +390,7 @@ public class ProductoController implements Initializable, ControlledScreen {
                     }
           
             }catch(Exception ex){
-                JOptionPane.showMessageDialog(null, "No puede ingresar números que excedan la capacidad máxima de un entero: 2,147,483,647");
+                JOptionPane.showMessageDialog(null, "No se admiten letras o números que excedan la capacidad máxima que puede almacenar un entero: 2,147,483,647");
             }
         }
         
