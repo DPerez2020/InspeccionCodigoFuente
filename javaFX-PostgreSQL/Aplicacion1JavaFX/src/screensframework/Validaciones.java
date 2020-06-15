@@ -1,5 +1,11 @@
 package screensframework;
 
+import screensframework.DBConnect.DBConnection;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
@@ -15,13 +21,34 @@ public class Validaciones {
     /******* VALIDAR VACIOS ************/
     public boolean validarVacios(String datos, String nombreCampo) {
         
-        if (datos.equals("")) {
-            
+        if (datos.equals("")) {            
             JOptionPane.showMessageDialog(null, "El campo "+nombreCampo+" no puede estar vacio");
             return false;
         }
         
         return true;
+    }
+    
+    public boolean validarVacios(int datos, String nombreCampo) {
+        
+        if (datos==-1) {
+            
+            JOptionPane.showMessageDialog(null, "Debe seleccionar un elemento del combobox: "+nombreCampo);
+            return false;
+        }
+        
+        return true;
+    }
+    /*****VALIDA CARACTERES ESPECIALES********/
+    public boolean ValidarCaracteresEspeciales(String cadena,String nombreCampo){
+         p = Pattern.compile("[$%&|<>#='\":]");
+         m=p.matcher(cadena);
+        if (m.find()){
+            JOptionPane.showMessageDialog(null, "El texto introducido: "+cadena+" tiene caracteres invalidos "
+                    + " para el campo "+nombreCampo);
+            return false;
+        }
+        return true;               
     }
     
     /********* VALIDAR LONGITUD ****************/
@@ -48,6 +75,38 @@ public class Validaciones {
                 return false;
             }
         }
+        return true;
+    }
+
+    public boolean correoNoExiste(String correo)  {
+
+        try{
+            Connection connection =  DBConnection.getConnection();
+
+            String sql = "SELECT * FROM USUARIOS WHERE correo = ?";
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1,correo);
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            if(rs.next()){
+
+
+                JOptionPane.showMessageDialog(null,"Este correo ya existe");
+                return false;
+            }else{
+
+
+                return true;
+            }
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
         return true;
     }
     
@@ -88,5 +147,11 @@ public class Validaciones {
         }
         return true;
     }
+    
+    public boolean validarPrecio(int precio){
+   
+            return precio > 0 && precio<2147483647;
+        
+        }
     
 }

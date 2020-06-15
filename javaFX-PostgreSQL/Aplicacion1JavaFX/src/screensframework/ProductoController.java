@@ -1,7 +1,9 @@
 package screensframework;
 
+import java.awt.Rectangle;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
@@ -27,7 +29,13 @@ import javax.swing.JOptionPane;
 import screensframework.DBConnect.DBConnection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javafx.print.Printer;
+import javafx.print.PrinterJob;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.image.WritableImage;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class ProductoController implements Initializable, ControlledScreen {
     
@@ -44,10 +52,20 @@ public class ProductoController implements Initializable, ControlledScreen {
     @FXML private ComboBox cbCategoriaProducto;
     @FXML private ComboBox cbMarcaProducto;
     @FXML private Label lbCodigoProducto;
-    
     @FXML private TableView tablaProducto;
     @FXML private TableColumn col;
+    @FXML private Hyperlink vistaImpresion= new Hyperlink();
+    
+     String[] titulos = {
+                    "Codigo",
+                    "Nombre",
+                    "Precio",
+                    "Categoria",
+                    "Marca"
+            };
     private Connection conexion;
+    
+    private Validaciones validar = new Validaciones();
     
     ObservableList<ObservableList> producto;
     
@@ -71,7 +89,7 @@ public class ProductoController implements Initializable, ControlledScreen {
             conexion = DBConnection.connect();
             
             // COMBOBOX DE CATEGORIA
-            String slqCategoria = "SELECT idcategoria, nombre_categoria FROM category";
+            String slqCategoria = "SELECT idcategoria, nombre_categoria FROM categoria";
             ResultSet resultadoCategoria = conexion.createStatement().executeQuery(slqCategoria);
             while(resultadoCategoria.next()) {
                 cbCategoriaProducto.getItems().add(resultadoCategoria.getString("nombre_categoria"));
@@ -116,13 +134,7 @@ public class ProductoController implements Initializable, ControlledScreen {
             //ResultSet
             ResultSet rs = conexion.createStatement().executeQuery(sql);
             // Títulos de las columnas
-            String[] titulos = {
-                    "Codigo",
-                    "Nombre",
-                    "Precio",
-                    "Categoria",
-                    "Marca"
-            };
+           
             /**********************************
              * TABLE COLUMN ADDED DYNAMICALLY *
              **********************************/
@@ -138,7 +150,7 @@ public class ProductoController implements Initializable, ControlledScreen {
                 tablaProducto.getColumns().addAll(col);
                 // Asignamos un tamaño a ls columnnas
                 col.setMinWidth(100);
-                System.out.println("Column ["+i+"] ");
+               // System.out.println("Column ["+i+"] ");
                 // Centrar los datos de la tabla
                 col.setCellFactory(new Callback<TableColumn<String,String>,TableCell<String,String>>(){
                     @Override
@@ -164,11 +176,11 @@ public class ProductoController implements Initializable, ControlledScreen {
             while(rs.next()){
                 //Iterate Row
                 ObservableList<String> row = FXCollections.observableArrayList();
-                for(int i = 1 ; i <= rs.getMetaData().getColumnCount()+1; i++){
+                for(int i = 1 ; i <= rs.getMetaData().getColumnCount(); i++){
                     //Iterate Column
                     row.add(rs.getString(i));
                 }
-                System.out.println("Row [1] added "+row );
+              //  System.out.println("Row [1] added "+row );
                 producto.addAll(row);
             }
             //FINALLY ADDED TO TableView
@@ -263,9 +275,22 @@ public class ProductoController implements Initializable, ControlledScreen {
         int indiceCategoria = cbCategoriaProducto.getSelectionModel().getSelectedIndex() + 1;
         int indiceMarca = cbMarcaProducto.getSelectionModel().getSelectedIndex() + 1;
         
+        if(validar.validarVacios(tfNombreProducto.getText(), "nombre del producto")&&
+           validar.validarVacios(tfPrecioProducto.getText(), "precio del producto")&&
+           validar.validarVacios(cbCategoriaProducto.getSelectionModel().getSelectedIndex(), "categoria")&&
+           validar.validarVacios(cbMarcaProducto.getSelectionModel().getSelectedIndex(), "marca") ){
+            
+        
+        try{
+            int precio= Integer.parseInt(tfPrecioProducto.getText());
+            
+            
+        
+        if (validar.validarPrecio(precio)){
+        
         try {
             conexion = DBConnection.connect();
-            String sql = "INSERT INTO product "
+            String sql = "INSERT INTO producto "
                     + " (nombre_producto, precio, idcategoria, idmarca) "
                     + " VALUES (?, ?, ?, ?)";
             PreparedStatement estado = conexion.prepareStatement(sql);
@@ -284,47 +309,91 @@ public class ProductoController implements Initializable, ControlledScreen {
             }
             estado.close();
             
+            Thread t = new Thread(new Runnable(){
+            public void run(){
+                JOptionPane.showMessageDialog(null, "El producto ha sido añadido correctamente.");
+                            }
+                    });
+                  t.start();
+
+            
         } catch (SQLException e) {
             System.out.println("Error " + e);
+           
         }
         
-    }
+        }else{
+    JOptionPane.showMessageDialog(null, "No se admiten precios iguales a 0, números negativos ");
     
+         }
+    }catch(Exception e){
+        JOptionPane.showMessageDialog(null, "No se admiten letras o números que excedan la capacidad máxima que puede almacenar un entero: 2,147,483,647");
+            }
+        }
+    }
     @FXML
     private void modificarProducto(ActionEvent event) {
         
         int indiceCategoria = cbCategoriaProducto.getSelectionModel().getSelectedIndex() + 1;
         int indiceMarca = cbMarcaProducto.getSelectionModel().getSelectedIndex() + 1;
+           
+        if(validar.validarVacios(tfNombreProducto.getText(), "nombre del producto")&&
+           validar.validarVacios(tfPrecioProducto.getText(), "precio del producto")&&
+           validar.validarVacios(cbCategoriaProducto.getSelectionModel().getSelectedIndex(), "categoria")&&
+           validar.validarVacios(cbMarcaProducto.getSelectionModel().getSelectedIndex(), "marca") ){
+            try{
+                int precio=Integer.parseInt(tfPrecioProducto.getText());
+                  if(validar.validarPrecio(precio)){
+                      
+                      try{
+                           conexion = DBConnection.connect();
+            
+                            String sql = "UPDATE producto "
+                                    + " SET nombre_producto = ?, "
+                                    + " precio = ?, "
+                                    + " idcategoria = ?, "
+                                    + " idmarca = ?"
+                                    + " WHERE idproducto = "+lbCodigoProducto.getText()+"";
+                            
+                             PreparedStatement estado = conexion.prepareStatement(sql);
+            
+                            estado.setString(1, tfNombreProducto.getText());
+                            estado.setInt(2, Integer.parseInt(tfPrecioProducto.getText()));
+                            estado.setInt(3, indiceCategoria);
+                            estado.setInt(4, indiceMarca);
+
+                            int n = estado.executeUpdate();
+
+                            if (n > 0) {
+                                tablaProducto.getColumns().clear();
+                                tablaProducto.getItems().clear();
+                                cargarDatosTabla();
+                            }
+
+                            estado.close();
+                             
+                            Thread t = new Thread(new Runnable(){
+                                public void run(){
+                                    JOptionPane.showMessageDialog(null, "El producto ha sido modificado correctamente.");
+                                                }
+                                        });
+                                      t.start();
+
         
-        try {
-            conexion = DBConnection.connect();
             
-            String sql = "UPDATE producto "
-                    + " SET nombre_producto = ?, "
-                    + " precio = ?, "
-                    + " idcategoria = ?, "
-                    + " idmarca = ?"
-                    + " WHERE idproducto = "+lbCodigoProducto.getText()+"";
-            
-            PreparedStatement estado = conexion.prepareStatement(sql);
-            
-            estado.setString(1, tfNombreProducto.getText());
-            estado.setInt(2, Integer.parseInt(tfPrecioProducto.getText()));
-            estado.setInt(3, indiceCategoria);
-            estado.setInt(4, indiceMarca);
-            
-            int n = estado.executeUpdate();
-            
-            if (n > 0) {
-                tablaProducto.getColumns().clear();
-                tablaProducto.getItems().clear();
-                cargarDatosTabla();
+                            } catch (SQLException e) {
+                                  System.out.println("Error " + e);
+                                  }
+                    }
+                  else{
+                    JOptionPane.showMessageDialog(null, "No se admiten precios iguales a 0, números negativos ");
+                    }
+          
+            }catch(Exception ex){
+                JOptionPane.showMessageDialog(null, "No se admiten letras o números que excedan la capacidad máxima que puede almacenar un entero: 2,147,483,647");
             }
-            
-            estado.close();
-        } catch (SQLException e) {
-            System.out.println("Error " + e);
         }
+        
     }
     
     @FXML
@@ -340,7 +409,7 @@ public class ProductoController implements Initializable, ControlledScreen {
 
                 PreparedStatement estado = conexion.prepareStatement(sql);
 
-                estado.executeUpdate();
+                int n = estado.executeUpdate();
 
                 if (n > 0) {
                     tablaProducto.getColumns().clear();
@@ -349,6 +418,12 @@ public class ProductoController implements Initializable, ControlledScreen {
                 }
 
                 estado.close();
+                 Thread t = new Thread(new Runnable(){
+                    public void run(){
+                        JOptionPane.showMessageDialog(null, "El producto ha sido eliminado correctamente.");
+                                    }
+                            });
+                          t.start();
 
             } catch (SQLException e) {
                 System.out.println("Error " + e);
@@ -379,6 +454,40 @@ public class ProductoController implements Initializable, ControlledScreen {
             
             ResultSet rs = conexion.createStatement().executeQuery(sql);
             
+            
+        for (int i = 0; i < rs.getMetaData().getColumnCount(); i++ ) {
+                final int j = i;
+                col = new TableColumn(titulos[i]);
+                col.setCellValueFactory(new Callback<CellDataFeatures<ObservableList, String>, ObservableValue<String>>(){                   
+                    public ObservableValue<String> call(CellDataFeatures<ObservableList, String> parametro) {                                                                                             
+                        return new SimpleStringProperty((String)parametro.getValue().get(j));                       
+                    }                   
+                });
+                tablaProducto.getColumns().addAll(col);
+                // Asignamos un tamaño a ls columnnas
+                col.setMinWidth(100);
+                System.out.println("Column ["+i+"] ");
+                // Centrar los datos de la tabla
+                col.setCellFactory(new Callback<TableColumn<String,String>,TableCell<String,String>>(){
+                    @Override
+                    public TableCell<String, String> call(TableColumn<String, String> p) {
+                        TableCell cell = new TableCell(){
+                            @Override
+                            protected void updateItem(Object t, boolean bln) {
+                                if(t != null){
+                                    super.updateItem(t, bln);
+                                    System.out.println(t);
+                                    setText(t.toString());
+                                    setAlignment(Pos.CENTER); //Setting the Alignment
+                                }
+                            }
+                        };
+                        return cell;
+                    }
+                });
+            }
+        //producto.clear();
+            
             while(rs.next()){
                 
                 ObservableList<String> row = FXCollections.observableArrayList();
@@ -386,6 +495,7 @@ public class ProductoController implements Initializable, ControlledScreen {
                    
                     row.add(rs.getString(i));
                 }
+                
                 producto.addAll(row);
             }
             tablaProducto.setItems(producto);
@@ -398,7 +508,7 @@ public class ProductoController implements Initializable, ControlledScreen {
     }
     
     @FXML
-    private void nuevoProducto(ActionEvent event) {
+    private void nuevoProducto(ActionEvent event) throws SQLException {
         
         btAddProducto.setDisable(false);
         btEliminarProducto.setDisable(true);
@@ -406,7 +516,35 @@ public class ProductoController implements Initializable, ControlledScreen {
         btAddProducto.setStyle("-fx-background-color:#66CCCC");
         btEliminarProducto.setStyle("-fx-background-color:grey");
         btModificarProducto.setStyle("-fx-background-color:grey");
+        
+        
+        tfPrecioProducto.setText("");
+        tfNombreProducto.setText("");
+        lbCodigoProducto.setText("");
+        
+        
+        cbCategoriaProducto.getSelectionModel().clearSelection();
+        cbMarcaProducto.getSelectionModel().clearSelection();
+        try{
+        conexion = DBConnection.connect();
+        
+        String sql="SELECT idproducto FROM producto ORDER BY idproducto DESC limit 1";
+        
+        ResultSet rs= conexion.createStatement().executeQuery(sql);
+        
+        if(rs.next()){
+            lbCodigoProducto.setText(" "+(rs.getInt(1)+1));
+         
+        }
+        
+           
+        
+        }catch(SQLException ex){
+            ex.printStackTrace();
+        }
     }
+    
+    
     
     @FXML
     private void irInicioContenido(ActionEvent event) {

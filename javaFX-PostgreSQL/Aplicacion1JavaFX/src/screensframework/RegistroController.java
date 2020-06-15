@@ -40,7 +40,7 @@ public class RegistroController implements Initializable, ControlledScreen {
                 "Hombre",
                 "Mujer"
                 );
-        cbAddsex.setItems(Options);
+        cbAddsex.setItems(options);
         
         // Escuchador para comprobar si pierdo el foco
         tfAddUser.focusedProperty().addListener(new ChangeListener<Boolean>() {
@@ -93,6 +93,10 @@ public class RegistroController implements Initializable, ControlledScreen {
             return;
         }
         
+        if (!validation.ValidarCaracteresEspeciales(tfAddUser.getText(), "USUARIO")) {
+            return;
+        }
+        
         if (!validation.validarVacios(tfAddNombre.getText(), "NOMBRE")) {
             return;
         }
@@ -104,7 +108,7 @@ public class RegistroController implements Initializable, ControlledScreen {
         if (cbAddsex.getValue() == null) {
             JOptionPane.showMessageDialog(null, "Selecciona el sexo");
             return;
-        }
+        }       
         
         if (!validation.validarVacios(tfAddCorreo.getText(), "CORREO")) {
             return;
@@ -117,17 +121,28 @@ public class RegistroController implements Initializable, ControlledScreen {
         if (!validation.validarVacios(tfAddPass.getText(), "CONTRASEÑA")) {
             return;
         }
-        
+
+
         if (!validation.validaPassword(tfAddPass.getText(), tfConfirmar.getText())) {
             return;
         }
-       
+
+        if(!validation.validarMaximo(tfAddPass.getText(),"CONTRASEÑA",16,5)){
+            return;
+        }
+
+
+        if(!validation.correoNoExiste(tfAddCorreo.getText())){
+            return;
+        }
+
+
         //______________________________________________________________
         // PREPARAMOS LA SENTENCIA PARA INSERTAR LOS DATOS
         try {
             conexion = DBConnection.connect();
-            String sql = "INSERT INTO usuario "
-                    + "(nombre, apellido, sexo, email, usuario, pass) "
+            String sql = "INSERT INTO usuarios "
+                    + "(nombre, apellido, sexo, correo, usuario, pass) "
                     + "VALUES (?, ?, ?, ?, ?, ?)";
             
             PreparedStatement estado = conexion.prepareStatement(sql);
@@ -136,7 +151,7 @@ public class RegistroController implements Initializable, ControlledScreen {
             estado.setString(3, cbAddsex.getValue().toString());
             estado.setString(4, tfAddCorreo.getText());
             estado.setString(5, tfAddUser.getText());
-            estado.setString(6, DigestUtils.sha1Hex(tfAddPass.getText()));
+            estado.setString(6, DigestUtils.shaHex(tfAddPass.getText()));
             
             tfAddNombre.setText("");
             tfAddApellido.setText("");
@@ -145,12 +160,13 @@ public class RegistroController implements Initializable, ControlledScreen {
             tfAddPass.setText("");
             tfConfirmar.setText("");
             cbAddsex.setValue("");
+                       
+            int n =  estado.executeUpdate();
+
             
-            int n = estado.executeUpdate();
-            
-            if (n > 0) {
-                JOptionPane.showMessageDialog(null, "Fallo el registro");
-            } 
+            if (n == 1) {
+                JOptionPane.showMessageDialog(null, "Se ha regitrado correctamente");
+            }
             
             estado.close();
             

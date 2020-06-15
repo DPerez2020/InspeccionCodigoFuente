@@ -87,7 +87,7 @@ public class ScreensController  extends StackPane {
             addScreen(name, loadScreen);
             return true;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+          //  System.out.println(e.getMessage());
             return false;
         }
     }
